@@ -31,6 +31,21 @@ export function Provider({ children }) {
   </State.Provider>
 }
 
+export function DashboardPage() {
+  const state = useContext(State);
+
+  return <section className="p-8">
+    <ul class="w-full flex flex-wrap gap-4">
+      {state.map((e,i) =>
+        <li key={i} className="p-8 bg-indigo-600 text-white rounded-md">
+          <div className="text-2xl font-bold">{e.nama}</div>
+          <div>Stok: {e.stok}</div>
+        </li>
+      )}
+    </ul>
+  </section>
+}
+
 export function Page() {
   const mutate = useContext(Mutate);
   const goto = useNavigate();
