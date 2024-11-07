@@ -52,10 +52,25 @@ export function Page() {
 
   const [select, setSelect] = useState(0);
   const [modal,setModal] = useState(null);
+  const [search,setSearch] = useState("");
 
   const detailModal = String((modal != "detail") && tw.hide);
   const addModal = String((modal != "add") && tw.hide);
   const deleteModal = String((modal != "delete") && tw.hide);
+
+  let filtered;
+
+  if (!search) {
+    // filtered = 
+  }
+
+  const inputListener = e => {
+    if (e.target.dataset.search) {
+      const target = e.target;
+      const value = target.value;
+      setSearch(value);
+    }
+  };
 
   const modalListener = e => {
     let id;
@@ -99,7 +114,13 @@ export function Page() {
   };
 
   return (
-    <section className="p-16 " onClick={modalListener} onKeyDown={escape} tabIndex="-1">
+    <section
+      className="p-16 "
+      onClick={modalListener}
+      onChange={inputListener}
+      onKeyDown={escape}
+      tabIndex="-1"
+    >
       <section data-close="true" className={tw.backdrop + detailModal}>
         <div className="w-full max-w-[480px]"><Detail i={select}/></div>
       </section>
@@ -112,7 +133,9 @@ export function Page() {
         <div className="w-full max-w-[1080px]"><Delete i={select}/></div>
       </section>
 
-      <List/>
+      <Search/>
+
+      {search ? <Filtered search={search}/> : <All/>}
 
       <div className="my-4">
         <button data-add="true" className={tw.button}>Tambah Item</button>
@@ -122,14 +145,12 @@ export function Page() {
   )
 }
 
-export function List() {
-  const state = useContext(State);
-
+export function List({ state }) {
   return (
-    <section className="w-full rounded-md shadow-md border">
+    <section className="w-full rounded-md shadow-md border border-gray-300">
       <table className="w-full">
         <thead>
-          <tr className="border-b hover:bg-gray-100">
+          <tr className="border-b border-gray-300 hover:bg-gray-100">
             <th className={tw.th}>Nama</th>
             <th className={tw.th}>Kategori</th>
             <th className={tw.th}>Stok</th>
@@ -160,6 +181,19 @@ export function List() {
       </table>
     </section>
   )
+}
+
+function Filtered({ search }) {
+  const state = useContext(State);
+  return <List state={state.filter(e =>
+    e.nama.toLowerCase().includes(search) ||
+    e.kategori.toLowerCase().includes(search)
+  )}/>
+}
+
+function All() {
+  const state = useContext(State);
+  return <List state={state}/>
 }
 
 export function Detail({ i }) {
@@ -233,13 +267,24 @@ export function Delete({ i }) {
 }
 
 const label = "flex flex-col gap-2 ";
-const input = "px-4 py-2 border border-gray-400 focus:border-indigo-600 rounded-md ";
+const input = "px-4 py-2 border border-gray-300 focus:border-indigo-600 rounded-md ";
 
 function Input({ name, children }) {
   return <label className={label}>
     <span>{children}</span>
     <input name={name} className={input} required/>
   </label>
+}
+
+function Search() {
+  return (
+    <div className="my-4">
+      <label className={label}>
+        <span>Cari</span>
+        <input data-search="true" name="search" className={input} required/>
+      </label>
+    </div>
+  )
 }
 
 export function DetailPage() {
