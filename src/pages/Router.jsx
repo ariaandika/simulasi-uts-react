@@ -10,6 +10,7 @@ export function Router() {
       <Route path="/" Component={Dashboard}></Route>
       <Route path="/inventories" Component={Inventory.Page}></Route>
       <Route path="/inventories/new" Component={Inventory.AddPage}></Route>
+      <Route path="/inventories/:id" Component={Inventory.DetailPage}></Route>
     </Routes>
   )
 }

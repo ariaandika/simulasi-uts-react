@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as tw from "./tw"
 import { createContext, useContext, useState } from "react";
 
@@ -33,6 +33,7 @@ export function Provider({ children }) {
 
 export function Page() {
   const mutate = useContext(Mutate);
+  const goto = useNavigate();
 
   const [select, setSelect] = useState(0);
   const [modal,setModal] = useState(null);
@@ -45,8 +46,12 @@ export function Page() {
     let id;
 
     if (id = e.target.dataset.detail) {
-      setSelect(parseInt(id));
-      setModal("detail");
+      if (e.altKey) {
+        goto("/inventories/" + parseInt(id));
+      } else {
+        setSelect(parseInt(id));
+        setModal("detail");
+      }
     }
 
     if (id = e.target.dataset.delete) {
@@ -60,7 +65,11 @@ export function Page() {
     }
 
     if (e.target.dataset.add) {
-      setModal("add");
+      if (e.altKey) {
+        goto("/inventories/new")
+      } else {
+        setModal("add");
+      }
     }
 
     if (e.target.dataset.close) {
@@ -216,6 +225,25 @@ function Input({ name, children }) {
     <span>{children}</span>
     <input name={name} className={input} required/>
   </label>
+}
+
+export function DetailPage() {
+  const goto = useNavigate();
+  const back = () => goto("/inventories");
+
+  const id = parseInt(useParams().id ?? "NaN");
+  if (isNaN(id)) {
+    back();
+  }
+
+  return (
+    <section className="py-4 max-w-[480px]">
+      <Detail i={id}/>
+      <div className="px-8">
+        <button className={tw.button} onClick={back}>Kembali</button>
+      </div>
+    </section>
+  )
 }
 
 export function AddPage() {
